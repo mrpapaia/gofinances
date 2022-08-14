@@ -2,7 +2,8 @@ import React, { createContext, ReactNode, useContext, useEffect, useState } from
 import * as WebBrowser from 'expo-web-browser';
 import * as Google from 'expo-auth-session/providers/google';
 import * as AuthSession from 'expo-auth-session';
-import { Use } from "react-native-svg";
+import * as AppleAuthentication from 'expo-apple-authentication';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 
 interface AuthProviderProps {
@@ -17,15 +18,17 @@ interface User {
 }
 interface IAuthContextData {
   user: User;
-  promptAsync():Promise<AuthSession.AuthSessionResult>;
+  signInWithGoogle():Promise<AuthSession.AuthSessionResult>;
+  signInWithApple():Promise<void>;
 }
 
 const AuthContext = createContext({} as IAuthContextData);
+
 WebBrowser.maybeCompleteAuthSession();
-
 export const AuthProvider = ({ children }: AuthProviderProps) => {
-  const [user, setUser]=useState({} as User);
+  const [user, setUser] = useState<User>({} as User);
 
+  //Bloco singIn Google ->
   const [request, response, promptAsync,] = Google.useAuthRequest({
     expoClientId:'993146365994-kajq7gsb1mk5mgl75gr489p44qfsufij.apps.googleusercontent.com',
     iosClientId:"993146365994-g4os9vpoleaidlkgaecpcbsl1ht9mfbk.apps.googleusercontent.com",
@@ -40,18 +43,24 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }
   }, [response]);
 
+  const signInWithGoogle=()=>promptAsync();
+
   const getGoogleUser = async (accessToken: string) => {
     try{ 
-          const response = await fetchUserInfo(accessToken)
-          response.json().then((data)=>{
-            setUser({id:data.id,email:data.email,name:data.name,photo:data.picture})           
-          });      
+        const response = await fetchUserInfo(accessToken)
+          response.json().then(async (data)=>{
+            const userLogged={id:String(data.id),email:data.email,name:data.name,photo:data.picture}
+
+            setUser(userLogged)      
+            await AsyncStorage.setItem('@gofinances:user',JSON.stringify(userLogged))     
+        });      
       }
       catch(error){
-          console.log('GoogleUserReq error: ', error);
+        console.log('GoogleUserReq error: ', error);
+        throw new Error(error);
       }
   }
-  async function fetchUserInfo(token:string) {
+  const  fetchUserInfo = async (token:string) =>{
    
     const response = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', { 
       headers: {
@@ -62,9 +71,31 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   
     return await response;
   }
+  //<- Bloco singIn Google
+
+  const signInWithApple = async ()=>{
+    try {
+      const credential= await AppleAuthentication.signInAsync({
+        requestedScopes:[
+          AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
+          AppleAuthentication.AppleAuthenticationScope.FULL_NAME]
+      })
+
+      if(credential){
+        const userLogged={id:String(credential.user), email:credential.email!, name:credential.fullName?.givenName!, photo:undefined}
+
+        setUser(userLogged)    
+        await AsyncStorage.setItem('@gofinances:user',JSON.stringify(userLogged));
+      }
+    } catch (error) {
+      throw new Error(error);
+    }
+  }
+
+
 
   return (
-    <AuthContext.Provider value={{ user, promptAsync}}>{children}</AuthContext.Provider>
+    <AuthContext.Provider value={{ user, signInWithGoogle, signInWithApple}}>{children}</AuthContext.Provider>
   );
 };
 
