@@ -19,8 +19,10 @@ import { SocialButtonSingIn } from "../../components/SocialButtonSingIn";
 import { useAuth } from "../../hooks/auth";
 
 export const SingIn = (): JSX.Element => {
-  const { user } = useAuth();
-  console.log(user);
+  const { user,promptAsync } = useAuth();
+const teste =()=>{
+
+}
   return (
     <Container>
       <Header>
@@ -42,7 +44,7 @@ export const SingIn = (): JSX.Element => {
 
       <Footer>
         <FooterWrapper>
-          <SocialButtonSingIn text={"Entrar com Google"} svg={GoogleSvg} />
+          <SocialButtonSingIn text={"Entrar com Google"} svg={GoogleSvg}  onPress={promptAsync}/>
           <SocialButtonSingIn text={"Entrar com Apple"} svg={AppleSvg} />
         </FooterWrapper>
       </Footer>
