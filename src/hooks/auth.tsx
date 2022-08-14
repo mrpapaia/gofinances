@@ -27,6 +27,8 @@ const AuthContext = createContext({} as IAuthContextData);
 WebBrowser.maybeCompleteAuthSession();
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useState<User>({} as User);
+  const [loading, setLoading] = useState(true);
+  const storageKey ='@gofinances:user';
 
   //Bloco singIn Google ->
   const [request, response, promptAsync,] = Google.useAuthRequest({
@@ -52,7 +54,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
             const userLogged={id:String(data.id),email:data.email,name:data.name,photo:data.picture}
 
             setUser(userLogged)      
-            await AsyncStorage.setItem('@gofinances:user',JSON.stringify(userLogged))     
+            await AsyncStorage.setItem(storageKey,JSON.stringify(userLogged))     
         });      
       }
       catch(error){
@@ -85,13 +87,24 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         const userLogged={id:String(credential.user), email:credential.email!, name:credential.fullName?.givenName!, photo:undefined}
 
         setUser(userLogged)    
-        await AsyncStorage.setItem('@gofinances:user',JSON.stringify(userLogged));
+        await AsyncStorage.setItem(storageKey,JSON.stringify(userLogged));
       }
     } catch (error) {
       throw new Error(error);
     }
   }
 
+useEffect(()=>{
+  async function loadStorageUser(){
+   const userStoraged = await AsyncStorage.getItem(storageKey)
+   if(userStoraged){
+    const userLogged= JSON.parse(userStoraged) as User;
+    setUser(userLogged);
+   }
+   setLoading(false);
+  }
+  loadStorageUser();
+},[]);
 
 
   return (

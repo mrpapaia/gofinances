@@ -19,7 +19,7 @@ import { SocialButtonSingIn } from "../../components/SocialButtonSingIn";
 import { useAuth } from "../../hooks/auth";
 import { Alert, Platform } from "react-native";
 
-export const SingIn = (): JSX.Element => {
+export const SignIn = (): JSX.Element => {
   const { user, signInWithGoogle, signInWithApple } = useAuth();
 
   const handleSignInWithGoogle = async ()=>{
