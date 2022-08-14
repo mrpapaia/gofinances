@@ -32,7 +32,7 @@ const schema = Yup.object().shape({
 });
 
 export const Register = (): JSX.Element => {
-  const collectionKey = "@gofinance:transactions";
+  const collectionKey = "@gofinances:transactions";
   const { getItem, setItem, removeItem } = useAsyncStorage(collectionKey);
 
   const [transactionType, setTrasactionType] = useState("");

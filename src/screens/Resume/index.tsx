@@ -40,12 +40,12 @@ interface ExpensiveProps {
 }
 
 export const Resume = (): JSX.Element => {
-  const collectionKey = "@gofinance:transactions";
+  const collectionKey = "@gofinances:transactions";
   const { getItem } = useAsyncStorage(collectionKey);
   const [expensiveResumeList, setExpensiveResumeList] = useState<
     ExpensiveProps[]
   >([] as ExpensiveProps[]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [selectedDate, setSelectedDate] = useState(new Date());
 
   const handleActionPrev = () => {
@@ -112,7 +112,7 @@ export const Resume = (): JSX.Element => {
   };
 
   const loadTransactions = async () => {
-    setLoading(true);
+    
 
     const response = await getItem();
     const transactions = response ? JSON.parse(response) : [];
@@ -126,6 +126,7 @@ export const Resume = (): JSX.Element => {
     setExpensiveResumeList(expensiveResumeList);
 
     await getExpensiveResume(expensives);
+    setLoading(false);
   };
 
   const getColors = () => {

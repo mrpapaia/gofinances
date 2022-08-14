@@ -43,7 +43,7 @@ interface HighLightData {
 }
 
 export const Dashboard = (): JSX.Element => {
-  const collectionKey = "@gofinance:transactions";
+  const collectionKey = "@gofinances:transactions";
   const theme = useTheme();
   const { getItem } = useAsyncStorage(collectionKey);
   const [loading, setLoading] = useState(true);
@@ -76,14 +76,14 @@ export const Dashboard = (): JSX.Element => {
           style: "currency",
           currency: "BRL",
         }),
-        dateInfo: `Última entrada ${getLastDateTransaction("up")}`,
+        dateInfo: `Última entrada ${getLastDateTransaction("up")??''}`,
       },
       expensive: {
         amount: expensiveTotal.toLocaleString("pt-BR", {
           style: "currency",
           currency: "BRL",
         }),
-        dateInfo: `Última entrada ${getLastDateTransaction("down")}`,
+        dateInfo: `Última entrada ${getLastDateTransaction("down")??''}`,
       },
       total: {
         amount: total.toLocaleString("pt-BR", {
@@ -128,12 +128,15 @@ export const Dashboard = (): JSX.Element => {
   };
 
   const getLastDateTransaction = (filterParam: string) => {
-    const date = transactionsList!
+    if(transactionsList===undefined){
+      return
+    }
+    const date = transactionsList
       .filter(
         (trasanction: TransactionProps) => trasanction.type === filterParam
       )
       .slice()
-      .reverse()[0].date;
+      .reverse()[0].date ;
     const [day, month, year] = date.split("/");
 
     return Intl.DateTimeFormat("pt-BR", {

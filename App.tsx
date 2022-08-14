@@ -16,8 +16,9 @@ import {
 
 import theme from "./src/global/styles/theme";
 import { AppRoutes } from "./src/routes/app.routes";
-import { SingIn } from "./src/screens/SingIn";
+import { SingIn } from "./src/screens/SignIn";
 import { AuthProvider } from "./src/hooks/auth";
+import { Routes } from "./src/routes";
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -34,11 +35,10 @@ export default function App() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <ThemeProvider theme={theme}>
         <StatusBar barStyle={"light-content"} />
-        <NavigationContainer>
+       
           <AuthProvider>
-            <SingIn />
-          </AuthProvider>
-        </NavigationContainer>
+            <Routes />
+          </AuthProvider>       
       </ThemeProvider>
     </GestureHandlerRootView>
   );
