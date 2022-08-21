@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useState } from "react";
 
 import { useFocusEffect, useIsFocused } from "@react-navigation/native";
 import { useAsyncStorage } from "@react-native-async-storage/async-storage";
@@ -76,14 +76,14 @@ export const Dashboard = (): JSX.Element => {
           style: "currency",
           currency: "BRL",
         }),
-        dateInfo: `Última entrada ${getLastDateTransaction("up")??''}`,
+        dateInfo: `Última entrada ${getLastDateTransaction("up") ?? ""}`,
       },
       expensive: {
         amount: expensiveTotal.toLocaleString("pt-BR", {
           style: "currency",
           currency: "BRL",
         }),
-        dateInfo: `Última entrada ${getLastDateTransaction("down")??''}`,
+        dateInfo: `Última entrada ${getLastDateTransaction("down") ?? ""}`,
       },
       total: {
         amount: total.toLocaleString("pt-BR", {
@@ -128,15 +128,15 @@ export const Dashboard = (): JSX.Element => {
   };
 
   const getLastDateTransaction = (filterParam: string) => {
-    if(transactionsList===undefined){
-      return
+    if (transactionsList === undefined) {
+      return;
     }
     const date = transactionsList
       .filter(
         (trasanction: TransactionProps) => trasanction.type === filterParam
       )
       .slice()
-      .reverse()[0].date ;
+      .reverse()[0].date;
     const [day, month, year] = date.split("/");
 
     return Intl.DateTimeFormat("pt-BR", {
